@@ -19,13 +19,17 @@ server.get("/projects", (req, res) => {
 server.post("/projects", (req, res) => {
   const newProject = req.body;
 
-  db.insertProject(newProject)
-    .then(project => {
-      res.status(201).json(project);
-    })
-    .catch(error => {
-      res.status(500).json({ error: "problems adding project" });
-    });
+  if (newProject.name) {
+    db.insertProject(newProject)
+      .then(project => {
+        res.status(201).json(project);
+      })
+      .catch(error => {
+        res.status(500).json({ error: "problems adding project" });
+      });
+  } else {
+    res.status(400).json({ error: "please enter project name" });
+  }
 });
 
 server.get("/resources", (req, res) => {
@@ -41,13 +45,17 @@ server.get("/resources", (req, res) => {
 server.post("/resources", (req, res) => {
   const newResource = req.body;
 
-  db.insertResource(newResource)
-    .then(resource => {
-      res.status(201).json(resource);
-    })
-    .catch(error => {
-      res.status(500).json({ error: "problems adding resource" });
-    });
+  if (newResource.name) {
+    db.insertResource(newResource)
+      .then(resource => {
+        res.status(201).json(resource);
+      })
+      .catch(error => {
+        res.status(500).json({ error: "problems adding resource" });
+      });
+  } else {
+    res.status(400).json({ error: "please enter resource name" });
+  }
 });
 
 server.get("/tasks", (req, res) => {
@@ -63,13 +71,19 @@ server.get("/tasks", (req, res) => {
 server.post("/tasks", (req, res) => {
   const newTask = req.body;
 
-  db.insertTask(newTask)
-    .then(task => {
-      res.status(201).json(task);
-    })
-    .catch(error => {
-      res.status(500).json({ error: "problems adding task" });
-    });
+  if (newTask.name && newTask.description && newTask.project_id) {
+    db.insertTask(newTask)
+      .then(task => {
+        res.status(201).json(task);
+      })
+      .catch(error => {
+        res.status(500).json({ error: "problems adding task" });
+      });
+  } else {
+    res
+      .status(400)
+      .json({ error: "Please enter task name, description, and project id" });
+  }
 });
 
 module.exports = server;
