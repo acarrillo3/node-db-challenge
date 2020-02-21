@@ -9,6 +9,13 @@ server.use(express.json());
 server.get("/projects", (req, res) => {
   db.getProjects()
     .then(projects => {
+      projects.forEach(obj => {
+        if (obj.completed == 1) {
+          obj.completed = true;
+        } else {
+          obj.completed = false;
+        }
+      });
       res.status(200).json(projects);
     })
     .catch(error => {
@@ -16,6 +23,38 @@ server.get("/projects", (req, res) => {
     });
 });
 
+server.get("/projects/:id", (req, res) => {
+  db.getProjectById(req.params.id)
+    .then(project => {
+      if (project.completed === 1) {
+        project.completed = true;
+      } else {
+        project.completed = false;
+      }
+      res.status(200).json(project);
+    })
+    .catch(error => {
+      res.status(500).json({ error: "problems retrieving projects" });
+    });
+});
+
+server.get("/projects/:id/tasks", (req, res) => {
+  db.getTasksByProject(req.params.id)
+    .then(task => {
+      // task.forEach(obj => {
+      //    if (obj.completed == 1) {
+      //       obj.completed = true
+      //    } else {
+      //       obj.completed = false
+      //    }
+      // })
+      res.status(200).json(task);
+    })
+    .catch(error => {
+      res.status(500).json({ error: "problems retrieving tasks" });
+    });
+});
+ 
 server.post("/projects", (req, res) => {
   const newProject = req.body;
 
@@ -61,6 +100,13 @@ server.post("/resources", (req, res) => {
 server.get("/tasks", (req, res) => {
   db.getTasks()
     .then(tasks => {
+      tasks.forEach(obj => {
+        if (obj.completed == 1) {
+          obj.completed = true;
+        } else {
+          obj.completed = false;
+        }
+      });
       res.status(200).json(tasks);
     })
     .catch(error => {
@@ -71,7 +117,7 @@ server.get("/tasks", (req, res) => {
 server.post("/tasks", (req, res) => {
   const newTask = req.body;
 
-  if (newTask.name && newTask.description && newTask.project_id) {
+  if (newTask.description && newTask.project_id) {
     db.insertTask(newTask)
       .then(task => {
         res.status(201).json(task);
